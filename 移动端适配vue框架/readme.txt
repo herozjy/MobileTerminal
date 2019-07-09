@@ -64,3 +64,17 @@
 
 5.在路由配置中  router.js
     mode : hash模式 改为 mode:history时出现npm run build打包之后,打开html文件，网页空白
+
+6.背景图片的引用问题  
+	build文件夹下的utils.js代码
+	
+	 if (options.extract) {
+      return ExtractTextPlugin.extract({
+        use: loaders,
+        fallback: 'vue-style-loader',
+        publicPath:"../../"  //背景图片的引用问题
+      })
+    } else {
+      return ['vue-style-loader'].concat(loaders)
+    }
+  }
