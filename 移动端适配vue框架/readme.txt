@@ -1,4 +1,4 @@
-1.webpack 3.x配置 
+﻿1.webpack 3.x配置 
 
 
 2.屏幕自适应
@@ -78,3 +78,11 @@
       return ['vue-style-loader'].concat(loaders)
     }
   }
+7.修改域名和端口
+	在config中的index.js文件中
+	dev{
+		....
+		 host: '192.168.16.61', // can be overwritten by process.env.HOST
+   		 port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+		....
+	}
