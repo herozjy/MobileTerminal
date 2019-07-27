@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+
+
+	<title>Document</title>
+	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+		
+
+	</script>
+	<style>
+		html{
+			overflow: hidden;
+		}
+		#box{
+			position: fixed;
+			width: 100%;
+			height:100%;
+		}
+		#app{
+			height: 200px;
+			overflow: auto;
+			border: 1px solid red;
+			width: 200px;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">
+			<div id="app">
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+				<p>16516</p>
+
+			</div>
+	</div>
+</body>
+<script>
+	
+$(document).ready(function(){
+    var app=document.getElementById("app");
+    var touchstartY;
+	document.addEventListener("touchstart",function(event){
+		console.log(event.target.id)
+		if(event.target.id=="box"){
+			 event.preventDefault();//禁止到顶下拉
+		}
+	},{passive:false})
+	document.addEventListener("touchmove",function(event){
+		console.log(event.target.id)
+		if(event.target.id=="box"){
+			 event.preventDefault();//禁止到顶下拉
+		}
+	},{passive:false})
+    app.addEventListener("touchstart",function(event){
+        var events=event.touches[0]||event;
+        touchstartY=events.clientY;//获取触摸目标在视口中的y坐标
+    },false);
+    
+    app.addEventListener("touchmove",function(event){
+        var events=event.touches[0]||event;
+        //注意document.body.scrollTop始终为0
+		var app=document.getElementById("app");
+        var scrollTop=app.scrollTop||document.documentElement.scrollTop;//获取滚动部分的高度
+        var clientHeight=document.documentElement.clientHeight;//获取手机屏幕高度（可视部分高度）
+        var scrollHeight=app.scrollHeight;//所有内容的高度
+        if(events.clientY>touchstartY&&scrollTop===0&&event.cancelable){
+            event.preventDefault();//禁止到顶下拉
+        }
+    },false);
+})
+
+
+</script>
+</html>
