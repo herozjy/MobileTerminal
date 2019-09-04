@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    <title>1111 监听返回</title>
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+    <a href="./2.html">111111111</a>
+    <script>
+            window.onload = function () {
+                pushHistory();
+                var bool = false;
+                setTimeout(function () {
+                    bool = true;
+                }, 500);
+                // 在微信中进入页面就触发了popstate事件
+                window.addEventListener("popstate", function (e) {
+                    if (bool) {
+                        console.log(11111)
+                        history.go(-1)
+                    }    
+                }, false);
+            }
+    
+            // 如果不先pushState一个地址就监听不到
+            function pushHistory() {
+                var state = {
+                    title: "title",
+                    url: ""
+                };
+                window.history.pushState(state, "title", "");
+            }
+        </script>
+</body>
+
+</html>
