@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <!-- <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>中文输入优化，我们想要的结果是只有词组进入了输入框才会触发事件</h3>
+    <h4>我们可以使用两个较新的事件来达到预期的效果：compositionstart和compositionend,也是ie9+的兼容最合适不过 </h4>
+    <input type="text" id="person" />
+    <script>
+        window.onload = function () {
+            var node = document.querySelector('#person');
+            var cpLock = false;
+            node.addEventListener('compositionstart', function () {
+                cpLock = true;
+            })
+            node.addEventListener('compositionend', function () {
+                cpLock = false;
+            })
+            node.addEventListener('input', function () {
+                if (!cpLock) {
+                    console.log(this.value);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
