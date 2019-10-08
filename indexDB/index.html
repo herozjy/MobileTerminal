@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div id='box'>11231</div>
+    <button id="btn">add数据</button>
+    <button id="btnRead">read数据</button>
+    <button id="btnReadAll">遍历数据</button>
+    <button id="btnRemove">删除数据</button>
+    <button id="btnSearch">使用索引</button>
+    <script>
+        window.onload = function () {
+            window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window
+                .msIndexedDB;
+            console.log(window.indexedDB)
+            if (!window.indexedDB) {
+                box.innerHTML =
+                    "Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available."
+                window.alert(
+                    "Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available."
+                )
+                return
+            }
+            var db;
+            var request = window.indexedDB.open("myfirstIndexDB", 3);
+            request.onerror = function (event) {
+                console.log('数据库打开报错', event);
+            };
+            request.onsuccess = function (event) {
+                //从openRequest.result属性可以拿到已经打开的IndexedDB数据库对象
+                db = request.result;
+                console.log('数据库打开成功', event);
+
+            };
+
+            //如果指定的版本号，大于数据库的实际版本号，就会发生数据库升级事件upgradeneeded。
+            request.onupgradeneeded = function (event) {
+                console.log('onupgradeneeded', event)
+                db = event.target.result;
+                var objectStore;
+                if (!db.objectStoreNames.contains('person')) {
+                    //新增一张叫做person的表格，主键是id。
+                    // objectStore = db.createObjectStore('person', { keyPath: 'id' });
+
+                    //如果数据记录里面没有合适作为主键的属性，那么可以让 IndexedDB 自动生成主键。
+                    var objectStore = db.createObjectStore(
+                        'person', {
+                            autoIncrement: true
+                        }
+                    );
+
+                    //新建索引
+                    //IDBObject.createIndex()的三个参数分别为索引名称、索引所在的属性、配置对象（说明该属性是否包含重复的值）
+                    objectStore.createIndex('name', 'name', {
+                        unique: false
+                    });
+                    objectStore.createIndex('email', 'email', {
+                        unique: false
+                    });
+                }
+
+
+            }
+
+            btn.onclick = function () {
+                console.log(db)
+                // add();
+            }
+
+            function add() {
+                //写入数据需要新建一个事务,新建时必须指定表格名称和操作模式（“只读”或“读写”）
+                //新建事务以后，通过IDBTransaction.objectStore(name)方法，拿到 IDBObjectStore 对象
+                //通过表格对象的add()方法
+                //该方法只用于添加数据，如果主键相同会报错，因此更新数据必须使用put()方法。
+                var request = db.transaction(['person'], 'readwrite')
+                    .objectStore('person')
+                    .add({
+                        name: '张三',
+                        age: 24,
+                        email: 'zhangsan@example.com'
+                    });
+
+                request.onsuccess = function (event) {
+                    console.log('数据写入成功');
+                };
+
+                request.onerror = function (event) {
+                    console.log('数据写入失败', event.srcElement.error.message);
+                }
+            }
+
+            btnRead.onclick = function () {
+
+                read()
+
+            }
+
+            function read() {
+                var transaction = db.transaction(['person']);
+                var objectStore = transaction.objectStore('person');
+                var request = objectStore.get(1);
+
+                request.onerror = function (event) {
+                    console.log('事务失败');
+                };
+
+                request.onsuccess = function (event) {
+                    if (request.result) {
+                        console.log('Name: ' + request.result.name);
+                        console.log('Age: ' + request.result.age);
+                        console.log('Email: ' + request.result.email);
+                    } else {
+                        console.log('未获得数据记录');
+                    }
+                };
+            }
+
+
+
+
+            btnReadAll.onclick = function () {
+
+                readAll()
+
+            }
+
+            function readAll() {
+                var objectStore = db.transaction('person').objectStore('person');
+
+                objectStore.openCursor().onsuccess = function (event) {
+                    var cursor = event.target.result;
+
+                    if (cursor) {
+                        console.log('Id: ' + cursor.key);
+                        console.log('Name: ' + cursor.value.name);
+                        console.log('Age: ' + cursor.value.age);
+                        console.log('Email: ' + cursor.value.email);
+                        cursor.continue();
+                    } else {
+                        console.log('没有更多数据了！');
+                    }
+                };
+            }
+
+            btnRemove.onclick = function () {
+
+                remove()
+
+            }
+
+            function remove() {
+                var request = db.transaction(['person'], 'readwrite')
+                    .objectStore('person')
+                    .delete(1);
+
+                request.onsuccess = function (event) {
+                    console.log('数据删除成功');
+                };
+            }
+
+            btnSearch.onclick = function () {
+
+                search()
+
+            }
+
+            function search() {
+                var transaction = db.transaction(['person'], 'readonly');
+                var store = transaction.objectStore('person');
+                var index = store.index('name');
+                var request = index.get('张三');
+
+                request.onsuccess = function (e) {
+                    var result = e.target.result;
+                    if (result) {
+                        // ...
+                        console.log(result)
+                    } else {
+                        // ...
+                        console.log(result)
+
+                    }
+                }
+            }
+
+
+        }
+    </script>
+</body>
+
+</html>
