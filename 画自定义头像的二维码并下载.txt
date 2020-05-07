@@ -1,0 +1,65 @@
+	            var logo = res.data.logo;
+                            var scan = res.data.scan; //
+                            var canvasW = 800; 
+                            var radius = canvasW/4.44444444445; 
+                            var canvasH = canvasW;
+                            var c = document.getElementById("myCanvas");
+                            c.width = canvasW;
+                            c.height = canvasH;
+                            var ctx = c.getContext("2d");
+                            var logoImg = new Image();
+                            var scanImg = new Image();
+                            scanImg.src = scan + '?t=' + new Date().getTime(); //加时间戳防止图片缓存
+                            logoImg.src = logo + '?t=' + new Date().getTime();
+	            //网络图片需要跨域,并且oss需要允许跨域
+                            scanImg.crossOrigin = 'Anonymous';
+                            logoImg.crossOrigin = 'Anonymous';
+                            var num = 0;
+                            scanImg.onload = function () {
+                                num = num + 1
+                            }
+                            logoImg.onload = function () {
+                                num = num + 1
+                            }
+                            // 等待图片下载完成
+                            var timer = setInterval(() => {
+                                if (num >= 2) {
+                                    clearInterval(timer)
+                                    ctx.drawImage(scanImg, 0, 0, canvasW, canvasH);
+                                    ctx.beginPath();
+                                    ctx.arc(canvasW / 2, canvasH / 2, radius, 0, 2 * Math.PI);
+                                    ctx.strokeStyle = '#ffffff'
+                                    ctx.stroke();
+                                    ctx.clip() //剪切了某个区域，之后的绘图都会被限制在被剪切的区域内
+                                    ctx.drawImage(logoImg, canvasW / 2 - radius, canvasH / 2 - radius, radius * 2, radius * 2)
+                                    //导出
+                                    var base64Img = c.toDataURL('image/png', 1.0);
+                                    downloadFile(base64Img);
+                                }
+                            }, 200)
+
+function downloadFile(content, fileName) { //下载base64图片
+ var base64ToBlob = function(code) {
+  let parts = code.split(';base64,');
+  console.log(parts)
+  let contentType = parts[0].split(':')[1];
+    console.log(contentType)
+
+  let raw = window.atob(parts[1]);
+  let rawLength = raw.length;
+  let uInt8Array = new Uint8Array(rawLength);
+  for(let i = 0; i < rawLength; ++i) {
+   uInt8Array[i] = raw.charCodeAt(i);
+  }
+  return new Blob([uInt8Array], {
+   type: contentType
+  });
+ };
+ let aLink = document.createElement('a');
+ let blob = base64ToBlob(content); //new Blob([content]);
+ let evt = document.createEvent("HTMLEvents");
+ evt.initEvent("click", true, true); //initEvent 不加后两个参数在FF下会报错  事件类型，是否冒泡，是否阻止浏览器的默认行为
+ aLink.download = fileName;
+ aLink.href = URL.createObjectURL(blob);
+ aLink.click();
+};
